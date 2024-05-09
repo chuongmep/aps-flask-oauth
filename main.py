@@ -8,9 +8,6 @@ import os
 from aps_toolkit import Auth
 
 app = Flask(__name__)
-app.config['APS_CLIENT_ID'] = os.environ.get('APS_CLIENT_ID')
-app.config['APS_CLIENT_SECRET'] = os.environ.get('APS_CLIENT_SECRET')
-app.config['APS_CLIENT_ID_PKCE'] = os.environ.get('APS_CLIENT_ID_PKCE')
 
 @app.route('/')
 def hello_world():
@@ -23,14 +20,18 @@ def hello_world():
 
 @app.route('/auth2leg')
 def auth2leg():
-    auth = Auth(app.config['APS_CLIENT_ID'], app.config['APS_CLIENT_SECRET'])
+    client_id = os.environ.get('APS_CLIENT_ID')
+    client_secret = os.environ.get('APS_CLIENT_SECRET')
+    auth = Auth(client_id, client_secret)
     token = auth.auth2leg()
     print(token.access_token)
     return token.access_token
 
 @app.route('/auth3leg')
 def auth3leg():
-    auth = Auth(app.config['APS_CLIENT_ID'])
+    client_id = os.environ.get('APS_CLIENT_ID')
+    client_secret = os.environ.get('APS_CLIENT_SECRET')
+    auth = Auth(client_id, client_secret)
     redirect_uri = "http://localhost:8080/api/auth/callback"
     scopes = 'data:read viewables:read'
     token = auth.auth3leg(redirect_uri, scopes)
@@ -40,8 +41,8 @@ def auth3leg():
 
 @app.route('/auth3legPkce')
 def auth3legPkce():
+    client_id = os.environ.get('APS_CLIENT_PKCE_ID')
     auth = Auth()
-    client_id = app.config['APS_CLIENT_ID_PKCE']
     redirect_uri = "http://localhost:8080/api/auth/callback"
     scopes = 'data:read viewables:read'
     token = auth.auth3legPkce(client_id, redirect_uri, scopes)
